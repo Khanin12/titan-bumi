@@ -2,7 +2,6 @@
 
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Topbar } from '@/components/topbar';
 import { Bell, Lock, User, Globe, Shield } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -23,7 +22,6 @@ export default function SettingsPage() {
 
     return (
         <>
-            <Topbar />
             <div className="p-6 space-y-8">
                 <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
                     <h2 className="text-3xl font-bold tracking-tight">Settings</h2>

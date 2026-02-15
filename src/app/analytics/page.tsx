@@ -2,7 +2,6 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Topbar } from '@/components/topbar';
 import {
     BarChart,
     Bar,
@@ -31,7 +30,6 @@ const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
 export default function AnalyticsPage() {
     return (
         <>
-            <Topbar />
             <div className="p-6 space-y-8">
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}

@@ -2,7 +2,6 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Topbar } from '@/components/topbar';
 import { MoreHorizontal, Search, UserPlus, Trash2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -40,7 +39,6 @@ export default function UsersPage() {
 
     return (
         <>
-            <Topbar />
             <div className="p-6 space-y-8">
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                     <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>

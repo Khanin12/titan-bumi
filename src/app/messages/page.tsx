@@ -2,7 +2,6 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Topbar } from '@/components/topbar';
 import { Mail, Send, User } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -20,7 +19,6 @@ export default function MessagesPage() {
 
     return (
         <>
-            <Topbar />
             <div className="p-6 space-y-8 h-[calc(100vh-64px)] flex flex-col">
                 <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="shrink-0">
                     <h2 className="text-3xl font-bold tracking-tight">Messages</h2>

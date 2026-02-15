@@ -3,7 +3,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Sidebar } from '@/components/sidebar';
-import { Topbar } from '@/components/topbar';
 import {
   TrendingUp,
   Users,
@@ -42,7 +41,6 @@ const stats = [
 export default function DashboardPage() {
   return (
     <>
-      <Topbar />
 
       <div className="p-6 space-y-8">
         {/* Welcome Header */}
