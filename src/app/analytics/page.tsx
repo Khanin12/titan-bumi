@@ -42,7 +42,7 @@ export default function AnalyticsPage() {
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <div className="p-6 bg-card border border-border rounded-2xl shadow-sm">
                         <h3 className="text-lg font-bold mb-6">Users Growth</h3>
-                        <div className="h-[300px]">
+                        <div className="h-[300px] min-w-0" style={{ height: 300 }}>
                             <ResponsiveContainer width="100%" height="100%">
                                 <BarChart data={data}>
                                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border)" />
@@ -57,7 +57,7 @@ export default function AnalyticsPage() {
 
                     <div className="p-6 bg-card border border-border rounded-2xl shadow-sm">
                         <h3 className="text-lg font-bold mb-6">Traffic Sources</h3>
-                        <div className="h-[300px]">
+                        <div className="h-[300px] min-w-0" style={{ height: 300 }}>
                             <ResponsiveContainer width="100%" height="100%">
                                 <PieChart>
                                     <Pie

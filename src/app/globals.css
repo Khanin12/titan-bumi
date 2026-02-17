@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   --color-border: var(--border);
   --color-input: var(--input);
@@ -78,9 +80,7 @@
     --input: #1e293b;
     --ring: #3b82f6;
   }
-}
 
-@layer base {
   * {
     border-color: var(--border);
   }

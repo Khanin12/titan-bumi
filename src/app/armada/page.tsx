@@ -10,11 +10,11 @@ import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { Download, FileSpreadsheet, FileText, Calendar as CalendarIcon } from 'lucide-react';
-import { div } from 'framer-motion/client';
+import { Toast, ToastType } from '@/components/ui/toast';
 
 type Armada = {
     id: string;
-    nama_sopir: string | null;
+    owner: string | null;
     plat_nomor: string | null;
     keterangan: string | null;
     created_at: string;
@@ -31,6 +31,16 @@ export default function ArmadaPage() {
     const [currentArmada, setCurrentArmada] = useState<Partial<Armada>>({});
     const [isEditing, setIsEditing] = useState(false);
     const [exportPeriod, setExportPeriod] = useState<'all' | 'daily' | 'weekly' | 'monthly' | 'yearly'>('all');
+    const [toast, setToast] = useState<{ message: string; type: ToastType; isVisible: boolean; id: number }>({
+        message: '',
+        type: 'success',
+        isVisible: false,
+        id: 0,
+    });
+
+    const showToast = (message: string, type: ToastType) => {
+        setToast({ message, type, isVisible: true, id: Date.now() });
+    };
 
     // Debounce search
     useEffect(() => {
@@ -45,10 +55,19 @@ export default function ArmadaPage() {
         try {
             const res = await fetch(`/api/armada?search=${search}&page=${page}&limit=10`);
             const json = await res.json();
-            setData(json.data);
-            setTotalPages(json.metadata.totalPages);
+
+            if (res.ok && json.data) {
+                setData(json.data);
+                setTotalPages(json.metadata?.totalPages || 1);
+            } else {
+                console.error('API Error:', json.error || 'Unknown error');
+                setData([]);
+                setTotalPages(1);
+            }
         } catch (error) {
             console.error('Failed to fetch data', error);
+            setData([]);
+            setTotalPages(1);
         } finally {
             setLoading(false);
         }
@@ -69,8 +88,11 @@ export default function ArmadaPage() {
             if (res.ok) {
                 setIsModalOpen(false);
                 fetchData();
+                showToast(isEditing ? 'Data updated successfully' : 'Data added successfully', isEditing ? 'info' : 'success');
                 setCurrentArmada({});
                 setIsEditing(false);
+            } else {
+                showToast('Failed to save data', 'destructive');
             }
         } catch (error) {
             console.error('Failed to save data', error);
@@ -86,7 +108,10 @@ export default function ArmadaPage() {
             if (res.ok) {
                 setIsDeleteModalOpen(false);
                 fetchData();
+                showToast('Data deleted successfully', 'destructive');
                 setCurrentArmada({});
+            } else {
+                showToast('Failed to delete data', 'destructive');
             }
         } catch (error) {
             console.error('Failed to delete data', error);
@@ -157,7 +182,7 @@ export default function ArmadaPage() {
     const exportToExcel = async () => {
         const exportData = await fetchExportData();
         const worksheet = XLSX.utils.json_to_sheet(exportData.map(item => ({
-            'Nama Sopir': item.nama_sopir,
+            'Nama Sopir': item.owner,
             'Plat Nomor': item.plat_nomor,
             'Keterangan': item.keterangan || '-',
             'Tanggal Dibuat': new Date(item.created_at).toLocaleDateString()
@@ -175,7 +200,7 @@ export default function ArmadaPage() {
         doc.text(`Dicetak pada: ${new Date().toLocaleString()}`, 14, 22);
 
         const tableData = exportData.map(item => [
-            item.nama_sopir,
+            item.owner,
             item.plat_nomor,
             item.keterangan || '-',
             new Date(item.created_at).toLocaleDateString()
@@ -207,6 +232,7 @@ export default function ArmadaPage() {
                                 placeholder="Search driver or plate..."
                                 value={search}
                                 onChange={(e) => setSearch(e.target.value)}
+                                suppressHydrationWarning
                                 className="w-full pl-10 pr-4 py-2 bg-accent/50 border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 text-sm"
                             />
                         </div>
@@ -217,6 +243,7 @@ export default function ArmadaPage() {
                                     value={exportPeriod}
                                     onChange={(e) => setExportPeriod(e.target.value as any)}
                                     className="w-full appearance-none bg-card border border-border px-3 py-2 pr-8 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary/20"
+                                    suppressHydrationWarning
                                 >
                                     <option value="all">All Time</option>
                                     <option value="daily">Daily</option>
@@ -231,6 +258,7 @@ export default function ArmadaPage() {
                                 <button
                                     onClick={exportToExcel}
                                     title="Export Excel"
+                                    suppressHydrationWarning
                                     className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-3 py-2 bg-green-600 text-white rounded-xl font-medium hover:bg-green-700 transition-colors text-sm"
                                 >
                                     <FileSpreadsheet className="w-4 h-4" />
@@ -239,6 +267,7 @@ export default function ArmadaPage() {
                                 <button
                                     onClick={exportToPDF}
                                     title="Export PDF"
+                                    suppressHydrationWarning
                                     className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-3 py-2 bg-red-600 text-white rounded-xl font-medium hover:bg-red-700 transition-colors text-sm"
                                 >
                                     <FileText className="w-4 h-4" />
@@ -248,6 +277,7 @@ export default function ArmadaPage() {
 
                             <button
                                 onClick={openAddModal}
+                                suppressHydrationWarning
                                 className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-xl font-medium hover:opacity-90 transition-opacity text-sm"
                             >
                                 <Plus className="w-4 h-4" />
@@ -263,8 +293,8 @@ export default function ArmadaPage() {
                         <table className="w-full text-left border-collapse">
                             <thead>
                                 <tr className="bg-accent/50 text-muted-foreground text-sm uppercase">
-                                    <th className="px-6 py-4 font-semibold">Driver Name</th>
-                                    <th className="px-6 py-4 font-semibold">License Plate</th>
+                                    <th className="px-6 py-4 font-semibold">Owner</th>
+                                    <th className="px-6 py-4 font-semibold">Plate Number</th>
                                     <th className="px-6 py-4 font-semibold">Description</th>
                                     <th className="px-6 py-4 font-semibold text-right">Actions</th>
                                 </tr>
@@ -274,7 +304,7 @@ export default function ArmadaPage() {
                                     <tr>
                                         <td colSpan={4} className="px-6 py-8 text-center text-muted-foreground">Loading...</td>
                                     </tr>
-                                ) : data.length === 0 ? (
+                                ) : !data || data.length === 0 ? (
                                     <tr>
                                         <td colSpan={4} className="px-6 py-8 text-center text-muted-foreground">No data found.</td>
                                     </tr>
@@ -293,7 +323,7 @@ export default function ArmadaPage() {
                                                         <div className="w-8 h-8 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-500">
                                                             <Truck className="w-4 h-4" />
                                                         </div>
-                                                        {item.nama_sopir || '-'}
+                                                        {item.owner || '-'}
                                                     </div>
                                                 </td>
                                                 <td className="px-6 py-4">
@@ -331,7 +361,7 @@ export default function ArmadaPage() {
                 <div className="md:hidden space-y-4">
                     {loading ? (
                         <div className="text-center py-8 text-muted-foreground">Loading...</div>
-                    ) : data.length === 0 ? (
+                    ) : !data || data.length === 0 ? (
                         <div className="text-center py-8 text-muted-foreground">No data found.</div>
                     ) : (
                         <AnimatePresence>
@@ -349,7 +379,7 @@ export default function ArmadaPage() {
                                                 <Truck className="w-5 h-5" />
                                             </div>
                                             <div>
-                                                <h3 className="font-semibold text-foreground">{item.nama_sopir || 'Unknown Driver'}</h3>
+                                                <h3 className="font-semibold text-foreground">{item.owner || 'Unknown Driver'}</h3>
                                                 <p className="text-xs text-muted-foreground">{new Date(item.created_at).toLocaleDateString()}</p>
                                             </div>
                                         </div>
@@ -428,8 +458,8 @@ export default function ArmadaPage() {
                                         <input
                                             required
                                             type="text"
-                                            value={currentArmada.nama_sopir || ''}
-                                            onChange={(e) => setCurrentArmada({ ...currentArmada, nama_sopir: e.target.value })}
+                                            value={currentArmada.owner || ''}
+                                            onChange={(e) => setCurrentArmada({ ...currentArmada, owner: e.target.value })}
                                             className="w-full px-3 py-2 bg-accent/50 border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20"
                                             placeholder="e.g. Budi Santoso"
                                         />
@@ -480,7 +510,7 @@ export default function ArmadaPage() {
                             </div>
                             <h3 className="font-bold text-lg mb-2">Delete Armada?</h3>
                             <p className="text-muted-foreground text-sm mb-6">
-                                Are you sure you want to delete <strong>{currentArmada.nama_sopir}</strong> ({currentArmada.plat_nomor})? This action cannot be undone.
+                                Are you sure you want to delete <strong>{currentArmada.owner}</strong> ({currentArmada.plat_nomor})? This action cannot be undone.
                             </p>
                             <div className="flex gap-3 justify-center">
                                 <button onClick={() => setIsDeleteModalOpen(false)} className="flex-1 px-4 py-2 text-sm font-medium border border-border rounded-xl hover:bg-accent transition-colors">Cancel</button>
@@ -491,6 +521,14 @@ export default function ArmadaPage() {
                 )
                 }
             </AnimatePresence >
+
+            <Toast
+                key={toast.id}
+                message={toast.message}
+                type={toast.type}
+                isVisible={toast.isVisible}
+                onClose={() => setToast({ ...toast, isVisible: false })}
+            />
         </>
     );
 }

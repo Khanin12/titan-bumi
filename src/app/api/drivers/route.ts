@@ -7,8 +7,6 @@ export async function GET(request: Request) {
     const search = searchParams.get('search') || '';
     const page = parseInt(searchParams.get('page') || '1');
     const limit = parseInt(searchParams.get('limit') || '10');
-    const startDate = searchParams.get('startDate');
-    const endDate = searchParams.get('endDate');
     const skip = (page - 1) * limit;
 
     try {
@@ -16,26 +14,19 @@ export async function GET(request: Request) {
 
         if (search) {
             where.OR = [
-                { owner: { contains: search, mode: 'insensitive' as const } },
-                { plat_nomor: { contains: search, mode: 'insensitive' as const } },
+                { name: { contains: search, mode: 'insensitive' } },
+                { phone: { contains: search, mode: 'insensitive' } },
             ];
         }
 
-        if (startDate && endDate) {
-            where.created_at = {
-                gte: new Date(startDate),
-                lte: new Date(endDate),
-            };
-        }
-
         const [data, total] = await Promise.all([
-            prisma.armada.findMany({
+            prisma.drivers.findMany({
                 where,
-                skip: limit > 0 ? skip : undefined, // Retrieve all if limit is 0 (for export)
+                skip: limit > 0 ? skip : undefined,
                 take: limit > 0 ? limit : undefined,
                 orderBy: { created_at: 'desc' },
             }),
-            prisma.armada.count({ where }),
+            prisma.drivers.count({ where }),
         ]);
 
         return NextResponse.json({
@@ -48,25 +39,24 @@ export async function GET(request: Request) {
             },
         });
     } catch (error) {
-        return NextResponse.json({ error: 'Failed to fetch data' }, { status: 500 });
+        return NextResponse.json({ error: 'Failed to fetch drivers' }, { status: 500 });
     }
 }
 
 export async function POST(request: Request) {
     try {
         const body = await request.json();
-        const { owner, plat_nomor, keterangan } = body;
+        const { name, phone } = body;
 
-        const newArmada = await prisma.armada.create({
+        const newDriver = await prisma.drivers.create({
             data: {
-                owner,
-                plat_nomor,
-                keterangan,
+                name,
+                phone,
             },
         });
 
-        return NextResponse.json(newArmada, { status: 201 });
+        return NextResponse.json(newDriver, { status: 201 });
     } catch (error) {
-        return NextResponse.json({ error: 'Failed to create data' }, { status: 500 });
+        return NextResponse.json({ error: 'Failed to create driver' }, { status: 500 });
     }
 }

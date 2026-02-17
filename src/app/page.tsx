@@ -100,7 +100,7 @@ export default function DashboardPage() {
                 <span className="text-xs font-medium text-muted-foreground">Revenue</span>
               </div>
             </div>
-            <div className="h-[300px] w-full">
+            <div className="h-[300px] w-full min-w-0" style={{ height: 300 }}>
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={data}>
                   <defs>

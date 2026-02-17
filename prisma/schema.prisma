@@ -8,9 +8,16 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
+model drivers {
+  id         String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name       String    @db.VarChar(100)
+  phone      String?   @db.VarChar(20)
+  created_at DateTime? @default(now()) @db.Timestamp(6)
+}
+
 model armada {
   id         String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
-  nama_sopir String?   @db.VarChar(100)
+  owner      String?   @db.VarChar(100)
   plat_nomor String?   @db.VarChar(20)
   keterangan String?
   created_at DateTime? @default(now()) @db.Timestamp(6)

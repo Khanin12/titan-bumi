@@ -9,12 +9,12 @@ export async function PUT(
     try {
         const { id } = await params;
         const body = await request.json();
-        const { nama_sopir, plat_nomor, keterangan } = body;
+        const { owner, plat_nomor, keterangan } = body;
 
         const updatedArmada = await prisma.armada.update({
             where: { id },
             data: {
-                nama_sopir,
+                owner,
                 plat_nomor,
                 keterangan,
             },
