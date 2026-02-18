@@ -12,6 +12,7 @@ import {
     MessageSquare,
     LogOut,
     Truck,
+    Package,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -21,6 +22,7 @@ const navItems = [
     { href: '/users', icon: Users, label: 'Users' },
     { href: '/drivers', icon: Users, label: 'Drivers' },
     { href: '/armada', icon: Truck, label: 'Armada' },
+    { href: '/materials', icon: Package, label: 'Materials' },
     { href: '/messages', icon: MessageSquare, label: 'Messages' },
     { href: '/settings', icon: Settings, label: 'Settings' },
 ];

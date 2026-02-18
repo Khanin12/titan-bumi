@@ -1,5 +1,6 @@
 
-import { PrismaClient } from '@prisma/client'
+import { PrismaClient } from '../generated/client'
+// Drivers, Armada, Materials models available
 
 const prismaClientSingleton = () => {
     return new PrismaClient()
