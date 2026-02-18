@@ -11,6 +11,7 @@ export async function PUT(
         const body = await request.json();
         const { name, price_per_rit } = body;
 
+
         const updatedMaterial = await prisma.materials.update({
             where: { id },
             data: {
