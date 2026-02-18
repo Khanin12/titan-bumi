@@ -28,6 +28,7 @@ export default function DriversPage() {
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [currentDriver, setCurrentDriver] = useState<Partial<Driver>>({});
     const [isEditing, setIsEditing] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const [toast, setToast] = useState<{ message: string; type: ToastType; isVisible: boolean; id: number }>({
         message: '',
         type: 'success',
@@ -62,6 +63,8 @@ export default function DriversPage() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        if (isSubmitting) return;
+        setIsSubmitting(true);
         try {
             const url = isEditing ? `/api/drivers/${currentDriver.id}` : '/api/drivers';
             const method = isEditing ? 'PUT' : 'POST';
@@ -83,6 +86,9 @@ export default function DriversPage() {
             }
         } catch (error) {
             console.error('Failed to save driver', error);
+            showToast('Failed to save driver', 'destructive');
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
@@ -324,7 +330,18 @@ export default function DriversPage() {
                                 </div>
                                 <div className="pt-2 flex justify-end gap-2">
                                     <button type="button" onClick={() => setIsModalOpen(false)} className="px-4 py-2 hover:bg-accent rounded-xl">Cancel</button>
-                                    <button type="submit" className="px-4 py-2 bg-primary text-primary-foreground rounded-xl">Save</button>
+                                    <button
+                                        type="submit"
+                                        disabled={isSubmitting}
+                                        className="px-4 py-2 bg-primary text-primary-foreground rounded-xl flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                                    >
+                                        {isSubmitting ? (
+                                            <>
+                                                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                                Saving...
+                                            </>
+                                        ) : 'Save'}
+                                    </button>
                                 </div>
                             </form>
                         </motion.div>

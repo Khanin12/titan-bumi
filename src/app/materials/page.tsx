@@ -27,6 +27,7 @@ export default function MaterialsPage() {
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [currentMaterial, setCurrentMaterial] = useState<Partial<Material>>({});
     const [isEditing, setIsEditing] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const [toast, setToast] = useState<{ message: string; type: ToastType; isVisible: boolean; id: number }>({
         message: '',
         type: 'success',
@@ -64,6 +65,8 @@ export default function MaterialsPage() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        if (isSubmitting) return;
+        setIsSubmitting(true);
         try {
             const url = isEditing ? `/api/materials/${currentMaterial.id}` : '/api/materials';
             const method = isEditing ? 'PUT' : 'POST';
@@ -86,6 +89,8 @@ export default function MaterialsPage() {
         } catch (error) {
             console.error('Failed to save material', error);
             showToast('An error occurred while saving', 'destructive');
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
@@ -356,7 +361,18 @@ export default function MaterialsPage() {
                                 </div>
                                 <div className="pt-2 flex justify-end gap-2">
                                     <button type="button" onClick={() => setIsModalOpen(false)} className="px-4 py-2 hover:bg-accent rounded-xl text-sm font-medium transition-colors">Cancel</button>
-                                    <button type="submit" className="px-4 py-2 bg-primary text-primary-foreground rounded-xl text-sm font-bold shadow-lg shadow-primary/20 hover:opacity-90 transition-all">Save Material</button>
+                                    <button
+                                        type="submit"
+                                        disabled={isSubmitting}
+                                        className="px-4 py-2 bg-primary text-primary-foreground rounded-xl text-sm font-bold shadow-lg shadow-primary/20 hover:opacity-90 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                                    >
+                                        {isSubmitting ? (
+                                            <>
+                                                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                                Saving...
+                                            </>
+                                        ) : 'Save Material'}
+                                    </button>
                                 </div>
                             </form>
                         </motion.div>
