@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Topbar } from '@/components/topbar';
-import { Search, Plus, Trash2, Edit2, Users, X, Phone } from 'lucide-react';
+import { Search, Plus, Trash2, Edit2, Contact2, X, Phone } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
@@ -227,7 +227,7 @@ export default function DriversPage() {
                                     <td className="px-6 py-4 font-medium">
                                         <div className="flex items-center gap-3">
                                             <div className="w-8 h-8 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-500">
-                                                <Users className="w-4 h-4" />
+                                                <Contact2 className="w-4 h-4" />
                                             </div>
                                             {item.name}
                                         </div>
@@ -266,7 +266,7 @@ export default function DriversPage() {
                                 <div className="flex justify-between items-start mb-3">
                                     <div className="flex items-center gap-3">
                                         <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-500 shrink-0">
-                                            <Users className="w-5 h-5" />
+                                            <Contact2 className="w-5 h-5" />
                                         </div>
                                         <div>
                                             <h3 className="font-semibold text-foreground">{item.name}</h3>

@@ -9,23 +9,68 @@ datasource db {
 }
 
 model drivers {
-  id         String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name       String    @db.VarChar(100)
-  phone      String?   @db.VarChar(20)
-  created_at DateTime? @default(now()) @db.Timestamp(6)
+  id           String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name         String         @db.VarChar(100)
+  phone        String?        @db.VarChar(20)
+  created_at   DateTime?      @default(now()) @db.Timestamp(6)
+  transactions transactions[]
 }
 
 model armada {
-  id         String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
-  owner      String?   @db.VarChar(100)
-  plat_nomor String?   @db.VarChar(20)
-  keterangan String?
-  created_at DateTime? @default(now()) @db.Timestamp(6)
+  id           String         @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  owner        String?        @db.VarChar(100)
+  plat_nomor   String?        @db.VarChar(20)
+  keterangan   String?
+  created_at   DateTime?      @default(now()) @db.Timestamp(6)
+  transactions transactions[]
 }
 
 model materials {
-  id            String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name          String    @db.VarChar(50)
-  price_per_rit Decimal?  @db.Decimal(15, 2)
-  created_at    DateTime? @default(now()) @db.Timestamp(6)
+  id            String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name          String         @db.VarChar(50)
+  price_per_rit Decimal?       @db.Decimal(15, 2)
+  created_at    DateTime?      @default(now()) @db.Timestamp(6)
+  transactions  transactions[]
+}
+
+model equipments {
+  id         String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name       String    @db.VarChar(100)
+  type       String?   @db.VarChar(50)
+  status     String?   @default("active") @db.VarChar(20)
+  created_at DateTime? @default(now()) @db.Timestamp(6)
+}
+
+model partners {
+  id           String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name         String         @db.VarChar(100)
+  location     String?
+  created_at   DateTime?      @default(now()) @db.Timestamp(6)
+  transactions transactions[]
+}
+
+model transactions {
+  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  date        DateTime  @db.Date
+  driver_id   String    @db.Uuid
+  armada_id   String    @db.Uuid
+  material_id String    @db.Uuid
+  partner_id  String    @db.Uuid
+  quantity    Decimal   @db.Decimal(10, 2)
+  price       Decimal   @db.Decimal(15, 2)
+  royalty     Decimal?  @default(0) @db.Decimal(15, 2)
+  solar       Decimal?  @default(0) @db.Decimal(15, 2)
+  notes       String?
+  created_at  DateTime? @default(now()) @db.Timestamp(6)
+
+  driver   drivers   @relation(fields: [driver_id], references: [id])
+  armada   armada    @relation(fields: [armada_id], references: [id])
+  material materials @relation(fields: [material_id], references: [id])
+  partner  partners  @relation(fields: [partner_id], references: [id])
+
+  @@index([date])
+  @@index([driver_id])
+  @@index([armada_id])
+  @@index([material_id])
+  @@index([partner_id])
 }

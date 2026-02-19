@@ -6,6 +6,9 @@ export type ExtendedPrismaClient = PrismaClient & {
     materials: any;
     drivers: any;
     armada: any;
+    equipments: any;
+    partners: any;
+    transactions: any;
 }
 
 const prismaClientSingleton = () => {

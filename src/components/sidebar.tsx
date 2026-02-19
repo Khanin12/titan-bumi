@@ -13,6 +13,11 @@ import {
     LogOut,
     Truck,
     Package,
+    Contact2,
+    Layers,
+    Construction,
+    Handshake,
+    ClipboardList,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -20,9 +25,12 @@ const navItems = [
     { href: '/', icon: LayoutDashboard, label: 'Dashboard' },
     { href: '/analytics', icon: BarChart3, label: 'Analytics' },
     { href: '/users', icon: Users, label: 'Users' },
-    { href: '/drivers', icon: Users, label: 'Drivers' },
+    { href: '/partners', icon: Handshake, label: 'Partners' },
+    { href: '/transactions', icon: ClipboardList, label: 'Transactions' },
+    { href: '/drivers', icon: Contact2, label: 'Drivers' },
     { href: '/armada', icon: Truck, label: 'Armada' },
-    { href: '/materials', icon: Package, label: 'Materials' },
+    { href: '/materials', icon: Layers, label: 'Materials' },
+    { href: '/equipments', icon: Construction, label: 'Equipments' },
     { href: '/messages', icon: MessageSquare, label: 'Messages' },
     { href: '/settings', icon: Settings, label: 'Settings' },
 ];
