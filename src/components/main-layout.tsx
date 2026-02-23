@@ -18,7 +18,7 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
             />
             <div className={cn(
                 "flex-1 min-w-0 transition-all duration-300 ease-in-out flex flex-col",
-                isSidebarExpanded ? "md:ml-[360px]" : "md:ml-[100px]"
+                isSidebarExpanded ? "md:ml-[280px]" : "md:ml-20"
             )}>
                 <Topbar onMenuClick={() => setIsMobileMenuOpen(true)} />
                 <main className="flex-1">

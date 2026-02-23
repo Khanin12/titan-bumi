@@ -107,14 +107,14 @@ const NavItem = ({ item, isActive, isCollapsed, onMobileClose }: { item: MenuIte
             href={item.route}
             onClick={onMobileClose}
             className={cn(
-                "flex items-center px-8 py-6 rounded-[24px] transition-all duration-300 group relative",
+                "flex items-center px-4 py-2.5 rounded-lg transition-all duration-300 group relative",
                 isActive
-                    ? "bg-primary text-primary-foreground shadow-2xl shadow-primary/30"
+                    ? "bg-primary text-primary-foreground shadow-sm shadow-primary/20"
                     : "hover:bg-accent text-muted-foreground hover:text-accent-foreground"
             )}
         >
-            <div className="flex items-center shrink-0 w-12 h-12 justify-center">
-                <item.icon className={cn("w-10 h-10 shrink-0", isActive ? "" : "group-hover:scale-110 transition-transform")} />
+            <div className="flex items-center shrink-0 w-5 h-5 justify-center">
+                <item.icon className={cn("w-[18px] h-[18px] shrink-0", isActive ? "" : "group-hover:scale-110 transition-transform")} />
             </div>
 
             <AnimatePresence>
@@ -123,7 +123,7 @@ const NavItem = ({ item, isActive, isCollapsed, onMobileClose }: { item: MenuIte
                         initial={{ opacity: 0, x: -10 }}
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, x: -10 }}
-                        className="ml-6 font-black text-2xl whitespace-nowrap overflow-hidden"
+                        className="ml-3 font-medium text-sm whitespace-nowrap overflow-hidden"
                     >
                         {item.title}
                     </motion.span>
@@ -137,7 +137,7 @@ const NavItem = ({ item, isActive, isCollapsed, onMobileClose }: { item: MenuIte
             )}
 
             {isCollapsed && (item.badge || item.hasNotification) && (
-                <div className="absolute top-2 right-2 w-3 h-3 bg-primary rounded-full border-2 border-background" />
+                <div className="absolute top-2 right-2 w-2 h-2 bg-primary rounded-full border-2 border-background" />
             )}
         </Link>
     );
@@ -168,17 +168,17 @@ const GroupComponent = ({ group, pathname, isCollapsed, onMobileClose }: { group
     }
 
     return (
-        <div className="space-y-3">
+        <div className="space-y-1.5">
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="w-full flex items-center px-6 py-5 text-xl font-black text-muted-foreground uppercase tracking-[0.2em] group hover:text-foreground transition-colors"
+                className="w-full flex items-center px-4 py-2.5 text-xs font-bold text-muted-foreground uppercase tracking-widest group hover:text-foreground transition-colors"
             >
-                <div className="flex items-center gap-4">
-                    <group.icon className="w-8 h-8" />
+                <div className="flex items-center gap-2.5">
+                    <group.icon className="w-4 h-4" />
                     <span>{group.group_name}</span>
                 </div>
                 {group.collapsible && (
-                    <ChevronDown className={cn("ml-auto w-8 h-8 transition-transform duration-300", isOpen ? "rotate-180" : "")} />
+                    <ChevronDown className={cn("ml-auto w-4 h-4 transition-transform duration-300", isOpen ? "rotate-180" : "")} />
                 )}
             </button>
 
@@ -219,7 +219,7 @@ interface SidebarProps {
 export function Sidebar({ onExpand, isMobileOpen, onMobileClose }: SidebarProps) {
     const pathname = usePathname();
     const router = useRouter();
-    const [isCollapsed, setIsCollapsed] = useState(false);
+    const [isCollapsed, setIsCollapsed] = useState(true);
     const [isHovered, setIsHovered] = useState(false);
 
     // Sync expanded state with layout
@@ -231,6 +231,12 @@ export function Sidebar({ onExpand, isMobileOpen, onMobileClose }: SidebarProps)
         }
     }, [expanded, onExpand]);
 
+    // Reset hover and close mobile on navigation
+    useEffect(() => {
+        setIsHovered(false);
+        if (onMobileClose) onMobileClose();
+    }, [pathname]); // onMobileClose removed from deps to maintain stable size if it's conditional
+
     const SidebarWrapper = ({ children, isMobile }: { children: React.ReactNode; isMobile?: boolean }) => {
         if (isMobile) {
             return (
@@ -239,7 +245,7 @@ export function Sidebar({ onExpand, isMobileOpen, onMobileClose }: SidebarProps)
                     animate={{ x: 0 }}
                     exit={{ x: '-100%' }}
                     transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-                    className="fixed left-0 top-0 h-screen w-[360px] bg-card border-r border-border z-50 flex flex-col md:hidden shadow-xl"
+                    className="fixed left-0 top-0 h-screen w-[280px] bg-card border-r border-border z-50 flex flex-col md:hidden shadow-xl"
                 >
                     {children}
                 </motion.aside>
@@ -249,9 +255,9 @@ export function Sidebar({ onExpand, isMobileOpen, onMobileClose }: SidebarProps)
         return (
             <motion.aside
                 initial={false}
-                animate={{ width: expanded ? 360 : 100 }}
-                onHoverStart={() => !isMobile && !isCollapsed && setIsHovered(true)}
-                onHoverEnd={() => !isMobile && setIsHovered(false)}
+                animate={{ width: expanded ? 280 : 80 }}
+                onMouseEnter={() => !isMobile && setIsHovered(true)}
+                onMouseLeave={() => !isMobile && setIsHovered(false)}
                 className="fixed left-0 top-0 h-screen bg-card border-r border-border hidden md:flex flex-col z-50 overflow-hidden shadow-sm"
             >
                 {children}
@@ -261,7 +267,7 @@ export function Sidebar({ onExpand, isMobileOpen, onMobileClose }: SidebarProps)
 
     const content = (
         <>
-            <div className="px-8 mb-16 mt-12 flex items-center justify-between shrink-0 h-16">
+            <div className="px-6 mb-8 mt-6 flex items-center justify-between shrink-0 h-12">
                 <AnimatePresence mode="wait">
                     {expanded ? (
                         <motion.h1
@@ -269,7 +275,7 @@ export function Sidebar({ onExpand, isMobileOpen, onMobileClose }: SidebarProps)
                             initial={{ opacity: 0, x: -10 }}
                             animate={{ opacity: 1, x: 0 }}
                             exit={{ opacity: 0, x: -10 }}
-                            className="text-5xl font-black bg-gradient-to-r from-primary to-blue-400 bg-clip-text text-transparent whitespace-nowrap"
+                            className="text-xl font-bold bg-gradient-to-r from-primary to-blue-400 bg-clip-text text-transparent whitespace-nowrap"
                         >
                             TitanBumi
                         </motion.h1>
@@ -279,7 +285,7 @@ export function Sidebar({ onExpand, isMobileOpen, onMobileClose }: SidebarProps)
                             initial={{ opacity: 0, scale: 0.5 }}
                             animate={{ opacity: 1, scale: 1 }}
                             exit={{ opacity: 0, scale: 0.5 }}
-                            className="w-16 h-16 rounded-3xl bg-primary flex items-center justify-center text-primary-foreground text-3xl font-black shrink-0 shadow-2xl shadow-primary/40"
+                            className="w-9 h-9 rounded-lg bg-primary flex items-center justify-center text-primary-foreground text-lg font-bold shrink-0 shadow-md shadow-primary/30"
                         >
                             T
                         </motion.div>
@@ -288,9 +294,10 @@ export function Sidebar({ onExpand, isMobileOpen, onMobileClose }: SidebarProps)
 
                 <button
                     onClick={() => setIsCollapsed(!isCollapsed)}
-                    className="hidden md:flex p-2 hover:bg-accent rounded-xl text-muted-foreground hover:text-foreground transition-colors"
+                    className="hidden md:flex p-1.5 hover:bg-accent rounded-lg text-muted-foreground hover:text-foreground transition-colors opacity-50 hover:opacity-100"
+                    title={isCollapsed ? "Lock expanded" : "Unlock to auto-hide"}
                 >
-                    <LayoutDashboard className="w-6 h-6" />
+                    <LayoutDashboard className="w-5 h-5" />
                 </button>
             </div>
 
@@ -306,16 +313,16 @@ export function Sidebar({ onExpand, isMobileOpen, onMobileClose }: SidebarProps)
                 ))}
             </div>
 
-            <div className="p-6 border-t border-border shrink-0 bg-background/50 backdrop-blur-sm">
+            <div className="p-4 border-t border-border shrink-0 bg-background/50 backdrop-blur-sm">
                 <button
                     onClick={() => router.push('/login')}
                     className={cn(
-                        "flex items-center p-6 w-full rounded-3xl text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all duration-300 group min-h-[90px]",
+                        "flex items-center p-3 w-full rounded-xl text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all duration-300 group min-h-[52px]",
                         !expanded && "justify-center px-0"
                     )}
                 >
-                    <div className="flex items-center shrink-0 w-10 h-10 justify-center">
-                        <LogOut className="w-9 h-9 shrink-0 group-hover:scale-110 transition-transform" />
+                    <div className="flex items-center shrink-0 w-5 h-5 justify-center">
+                        <LogOut className="w-[18px] h-[18px] shrink-0 group-hover:scale-110 transition-transform" />
                     </div>
                     <AnimatePresence>
                         {expanded && (
@@ -323,7 +330,7 @@ export function Sidebar({ onExpand, isMobileOpen, onMobileClose }: SidebarProps)
                                 initial={{ opacity: 0, x: -10 }}
                                 animate={{ opacity: 1, x: 0 }}
                                 exit={{ opacity: 0, x: -10 }}
-                                className="ml-6 font-black text-2xl whitespace-nowrap overflow-hidden"
+                                className="ml-3 font-medium text-sm whitespace-nowrap overflow-hidden"
                             >
                                 Logout
                             </motion.span>
