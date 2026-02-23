@@ -38,8 +38,13 @@ type LookupData = {
 };
 
 export default function TransactionsPage() {
+    const [mounted, setMounted] = useState(false);
     const [data, setData] = useState<Transaction[]>([]);
     const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
     const [search, setSearch] = useState('');
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
@@ -250,7 +255,9 @@ export default function TransactionsPage() {
                                     <tr key={item.id} className="hover:bg-accent/30 transition-colors group">
                                         <td className="px-6 py-4">
                                             <div className="flex flex-col">
-                                                <span className="font-semibold text-sm">{new Date(item.date).toLocaleDateString()}</span>
+                                                <span className="font-semibold text-sm">
+                                                    {mounted ? new Date(item.date).toLocaleDateString() : '...'}
+                                                </span>
                                                 <span className="text-[10px] font-mono text-muted-foreground uppercase">{item.id.split('-')[0]}</span>
                                             </div>
                                         </td>
@@ -280,8 +287,8 @@ export default function TransactionsPage() {
                                         </td>
                                         <td className="px-6 py-4">
                                             <div className="flex flex-col">
-                                                <span className="text-sm font-bold text-primary">{formatCurrency(Number(item.price) * Number(item.quantity))}</span>
-                                                <span className="text-[10px] text-muted-foreground">Qty: {Number(item.quantity)} @ {formatCurrency(item.price)}</span>
+                                                <span className="text-sm font-bold text-primary">{mounted ? formatCurrency(Number(item.price) * Number(item.quantity)) : '...'}</span>
+                                                <span className="text-[10px] text-muted-foreground">Qty: {Number(item.quantity)} @ {mounted ? formatCurrency(item.price) : '...'}</span>
                                             </div>
                                         </td>
                                         <td className="px-6 py-4 text-right">
@@ -304,11 +311,11 @@ export default function TransactionsPage() {
                     <motion.div key={item.id} layout className="bg-card border border-border rounded-2xl p-4 shadow-sm space-y-4">
                         <div className="flex justify-between items-start">
                             <div>
-                                <span className="text-xs font-bold text-muted-foreground uppercase">{new Date(item.date).toLocaleDateString('id-ID', { weekday: 'long' })}</span>
-                                <h3 className="font-bold text-lg">{new Date(item.date).toLocaleDateString()}</h3>
+                                <span className="text-xs font-bold text-muted-foreground uppercase">{mounted ? new Date(item.date).toLocaleDateString('id-ID', { weekday: 'long' }) : '...'}</span>
+                                <h3 className="font-bold text-lg">{mounted ? new Date(item.date).toLocaleDateString() : '...'}</h3>
                             </div>
                             <div className="text-right">
-                                <p className="text-xl font-black text-primary">{formatCurrency(Number(item.price) * Number(item.quantity))}</p>
+                                <p className="text-xl font-black text-primary">{mounted ? formatCurrency(Number(item.price) * Number(item.quantity)) : '...'}</p>
                                 <p className="text-[10px] text-muted-foreground">{item.material.name}</p>
                             </div>
                         </div>
@@ -351,7 +358,7 @@ export default function TransactionsPage() {
                                     {currentTransaction.material_id && (
                                         <div className="bg-black/20 p-4 rounded-2xl backdrop-blur-sm border border-white/10">
                                             <p className="text-[10px] uppercase font-bold text-white/50 mb-1 tracking-widest">Calculated Total</p>
-                                            <p className="text-2xl font-black">{formatCurrency(Number(currentTransaction.price || 0) * Number(currentTransaction.quantity || 1))}</p>
+                                            <p className="text-2xl font-black">{mounted ? formatCurrency(Number(currentTransaction.price || 0) * Number(currentTransaction.quantity || 1)) : '...'}</p>
                                         </div>
                                     )}
                                 </div>

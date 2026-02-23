@@ -11,6 +11,7 @@ import {
   ArrowUpRight,
   ArrowDownRight
 } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import {
   AreaChart,
   Area,
@@ -75,7 +76,7 @@ export default function DashboardPage() {
                 </div>
                 <span className={cn(
                   "text-xs font-medium px-2 py-1 rounded-full",
-                  stat.change.startsWith('+') ? "bg-green-500/10 text-green-500" : "bg-red-500/10 text-red-500"
+                  stat.change?.startsWith('+') ? "bg-green-500/10 text-green-500" : "bg-red-500/10 text-red-500"
                 )}>
                   {stat.change}
                 </span>
@@ -181,7 +182,4 @@ export default function DashboardPage() {
 }
 
 
-// Helper to get cn in this file
-function cn(...inputs: any[]) {
-  return inputs.filter(Boolean).join(' ');
-}
+// Helper function removed in favor of @/lib/utils

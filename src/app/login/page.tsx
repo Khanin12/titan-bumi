@@ -45,7 +45,7 @@ export default function LoginPage() {
                                     placeholder="admin@titanbumi.com"
                                     className="w-full pl-10 pr-4 py-3 bg-accent/50 border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
                                     required
-                                    suppressHydrationWarning
+
                                 />
                             </div>
                         </div>
@@ -59,12 +59,12 @@ export default function LoginPage() {
                                     placeholder="••••••••"
                                     className="w-full pl-10 pr-12 py-3 bg-accent/50 border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
                                     required
-                                    suppressHydrationWarning
+
                                 />
                                 <button
                                     type="button"
                                     onClick={() => setShowPassword(!showPassword)}
-                                    suppressHydrationWarning
+
                                     className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                                 >
                                     {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
@@ -83,7 +83,7 @@ export default function LoginPage() {
                         <button
                             type="submit"
                             disabled={isLoading}
-                            suppressHydrationWarning
+
                             className="w-full py-3 bg-primary text-primary-foreground rounded-xl font-bold flex items-center justify-center gap-2 hover:opacity-90 disabled:opacity-70 transition-all"
                         >
                             {isLoading ? (
