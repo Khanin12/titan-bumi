@@ -21,6 +21,7 @@ type Armada = {
 };
 
 export default function ArmadaPage() {
+    const [mounted, setMounted] = useState(false);
     const [data, setData] = useState<Armada[]>([]);
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState('');
@@ -42,6 +43,10 @@ export default function ArmadaPage() {
     const showToast = (message: string, type: ToastType) => {
         setToast({ message, type, isVisible: true, id: Date.now() });
     };
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     // Debounce search
     useEffect(() => {
@@ -191,7 +196,7 @@ export default function ArmadaPage() {
             'Nama Sopir': item.owner,
             'Plat Nomor': item.plat_nomor,
             'Keterangan': item.keterangan || '-',
-            'Tanggal Dibuat': new Date(item.created_at).toLocaleDateString()
+            'Tanggal Dibuat': mounted ? new Date(item.created_at).toLocaleDateString() : '...'
         })));
         const workbook = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(workbook, worksheet, "Armada");
@@ -209,7 +214,7 @@ export default function ArmadaPage() {
             item.owner,
             item.plat_nomor,
             item.keterangan || '-',
-            new Date(item.created_at).toLocaleDateString()
+            mounted ? new Date(item.created_at).toLocaleDateString() : '...'
         ]);
 
         autoTable(doc, {
@@ -238,7 +243,6 @@ export default function ArmadaPage() {
                                 placeholder="Search driver or plate..."
                                 value={search}
                                 onChange={(e) => setSearch(e.target.value)}
-                                suppressHydrationWarning
                                 className="w-full pl-10 pr-4 py-2 bg-accent/50 border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 text-sm"
                             />
                         </div>
@@ -249,7 +253,6 @@ export default function ArmadaPage() {
                                     value={exportPeriod}
                                     onChange={(e) => setExportPeriod(e.target.value as any)}
                                     className="w-full appearance-none bg-card border border-border px-3 py-2 pr-8 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary/20"
-                                    suppressHydrationWarning
                                 >
                                     <option value="all">All Time</option>
                                     <option value="daily">Daily</option>
@@ -264,7 +267,6 @@ export default function ArmadaPage() {
                                 <button
                                     onClick={exportToExcel}
                                     title="Export Excel"
-                                    suppressHydrationWarning
                                     className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-3 py-2 bg-green-600 text-white rounded-xl font-medium hover:bg-green-700 transition-colors text-sm"
                                 >
                                     <FileSpreadsheet className="w-4 h-4" />
@@ -273,7 +275,6 @@ export default function ArmadaPage() {
                                 <button
                                     onClick={exportToPDF}
                                     title="Export PDF"
-                                    suppressHydrationWarning
                                     className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-3 py-2 bg-red-600 text-white rounded-xl font-medium hover:bg-red-700 transition-colors text-sm"
                                 >
                                     <FileText className="w-4 h-4" />
@@ -283,7 +284,6 @@ export default function ArmadaPage() {
 
                             <button
                                 onClick={openAddModal}
-                                suppressHydrationWarning
                                 className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-xl font-medium hover:opacity-90 transition-opacity text-sm"
                             >
                                 <Plus className="w-4 h-4" />
@@ -386,7 +386,7 @@ export default function ArmadaPage() {
                                             </div>
                                             <div>
                                                 <h3 className="font-semibold text-foreground">{item.owner || 'Unknown Driver'}</h3>
-                                                <p className="text-xs text-muted-foreground">{new Date(item.created_at).toLocaleDateString()}</p>
+                                                <p className="text-xs text-muted-foreground">{mounted ? new Date(item.created_at).toLocaleDateString() : '...'}</p>
                                             </div>
                                         </div>
                                         <div className="bg-black text-white dark:bg-white dark:text-black px-2 py-1 rounded font-mono text-xs border border-white/20 dark:border-black/20 font-bold whitespace-nowrap">
@@ -445,72 +445,70 @@ export default function ArmadaPage() {
 
             {/* Add/Edit Modal */}
             <AnimatePresence>
-                {
-                    isModalOpen && (
-                        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-                            <motion.div
-                                initial={{ opacity: 0, scale: 0.95 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                exit={{ opacity: 0, scale: 0.95 }}
-                                className="bg-card w-full max-w-md rounded-2xl border border-border shadow-xl overflow-hidden"
-                            >
-                                <div className="p-4 border-b border-border flex justify-between items-center">
-                                    <h3 className="font-bold text-lg">{isEditing ? 'Edit Armada' : 'Add New Armada'}</h3>
-                                    <button onClick={() => setIsModalOpen(false)} className="p-1 hover:bg-accent rounded-lg"><X className="w-5 h-5" /></button>
+                {isModalOpen && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.95 }}
+                            className="bg-card w-full max-w-md rounded-2xl border border-border shadow-xl overflow-hidden"
+                        >
+                            <div className="p-4 border-b border-border flex justify-between items-center">
+                                <h3 className="font-bold text-lg">{isEditing ? 'Edit Armada' : 'Add New Armada'}</h3>
+                                <button onClick={() => setIsModalOpen(false)} className="p-1 hover:bg-accent rounded-lg"><X className="w-5 h-5" /></button>
+                            </div>
+                            <form onSubmit={handleSubmit} className="p-4 space-y-4">
+                                <div className="space-y-2">
+                                    <label className="text-sm font-medium">Driver Name</label>
+                                    <input
+                                        required
+                                        type="text"
+                                        value={currentArmada.owner || ''}
+                                        onChange={(e) => setCurrentArmada({ ...currentArmada, owner: e.target.value })}
+                                        className="w-full px-3 py-2 bg-accent/50 border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20"
+                                        placeholder="e.g. Budi Santoso"
+                                    />
                                 </div>
-                                <form onSubmit={handleSubmit} className="p-4 space-y-4">
-                                    <div className="space-y-2">
-                                        <label className="text-sm font-medium">Driver Name</label>
-                                        <input
-                                            required
-                                            type="text"
-                                            value={currentArmada.owner || ''}
-                                            onChange={(e) => setCurrentArmada({ ...currentArmada, owner: e.target.value })}
-                                            className="w-full px-3 py-2 bg-accent/50 border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20"
-                                            placeholder="e.g. Budi Santoso"
-                                        />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <label className="text-sm font-medium">License Plate</label>
-                                        <input
-                                            required
-                                            type="text"
-                                            value={currentArmada.plat_nomor || ''}
-                                            onChange={(e) => setCurrentArmada({ ...currentArmada, plat_nomor: e.target.value })}
-                                            className="w-full px-3 py-2 bg-accent/50 border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20"
-                                            placeholder="e.g. B 1234 CD"
-                                        />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <label className="text-sm font-medium">Description</label>
-                                        <textarea
-                                            value={currentArmada.keterangan || ''}
-                                            onChange={(e) => setCurrentArmada({ ...currentArmada, keterangan: e.target.value })}
-                                            className="w-full px-3 py-2 bg-accent/50 border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 min-h-[80px]"
-                                            placeholder="Optional description..."
-                                        />
-                                    </div>
-                                    <div className="pt-2 flex justify-end gap-2">
-                                        <button type="button" onClick={() => setIsModalOpen(false)} className="px-4 py-2 text-sm font-medium hover:bg-accent rounded-xl transition-colors">Cancel</button>
-                                        <button
-                                            type="submit"
-                                            disabled={isSubmitting}
-                                            className="px-4 py-2 text-sm font-medium bg-primary text-primary-foreground rounded-xl hover:opacity-90 transition-opacity flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                                        >
-                                            {isSubmitting ? (
-                                                <>
-                                                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                                                    Saving...
-                                                </>
-                                            ) : 'Save'}
-                                        </button>
-                                    </div>
-                                </form>
-                            </motion.div>
-                        </div>
-                    )
-                }
-            </AnimatePresence >
+                                <div className="space-y-2">
+                                    <label className="text-sm font-medium">License Plate</label>
+                                    <input
+                                        required
+                                        type="text"
+                                        value={currentArmada.plat_nomor || ''}
+                                        onChange={(e) => setCurrentArmada({ ...currentArmada, plat_nomor: e.target.value })}
+                                        className="w-full px-3 py-2 bg-accent/50 border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20"
+                                        placeholder="e.g. B 1234 CD"
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-sm font-medium">Description</label>
+                                    <textarea
+                                        value={currentArmada.keterangan || ''}
+                                        onChange={(e) => setCurrentArmada({ ...currentArmada, keterangan: e.target.value })}
+                                        className="w-full px-3 py-2 bg-accent/50 border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 min-h-[80px]"
+                                        placeholder="Optional description..."
+                                    />
+                                </div>
+                                <div className="pt-2 flex justify-end gap-2">
+                                    <button type="button" onClick={() => setIsModalOpen(false)} className="px-4 py-2 text-sm font-medium hover:bg-accent rounded-xl transition-colors">Cancel</button>
+                                    <button
+                                        type="submit"
+                                        disabled={isSubmitting}
+                                        className="px-4 py-2 text-sm font-medium bg-primary text-primary-foreground rounded-xl hover:opacity-90 transition-opacity flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                                    >
+                                        {isSubmitting ? (
+                                            <>
+                                                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                                Saving...
+                                            </>
+                                        ) : 'Save'}
+                                    </button>
+                                </div>
+                            </form>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
 
             {/* Delete Confirmation Modal */}
             <AnimatePresence>
@@ -535,9 +533,8 @@ export default function ArmadaPage() {
                             </div>
                         </motion.div>
                     </div>
-                )
-                }
-            </AnimatePresence >
+                )}
+            </AnimatePresence>
 
             <Toast
                 key={toast.id}

@@ -19,6 +19,7 @@ type Driver = {
 };
 
 export default function DriversPage() {
+    const [mounted, setMounted] = useState(false);
     const [data, setData] = useState<Driver[]>([]);
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState('');
@@ -39,6 +40,10 @@ export default function DriversPage() {
     const showToast = (message: string, type: ToastType) => {
         setToast({ message, type, isVisible: true, id: Date.now() });
     };
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -132,7 +137,7 @@ export default function DriversPage() {
         const worksheet = XLSX.utils.json_to_sheet(data.map(item => ({
             'Name': item.name,
             'Phone': item.phone || '-',
-            'Created At': new Date(item.created_at).toLocaleDateString()
+            'Created At': mounted ? new Date(item.created_at).toLocaleDateString() : '...'
         })));
         const workbook = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(workbook, worksheet, "Drivers");
@@ -145,7 +150,7 @@ export default function DriversPage() {
         const tableData = data.map(item => [
             item.name,
             item.phone || '-',
-            new Date(item.created_at).toLocaleDateString()
+            mounted ? new Date(item.created_at).toLocaleDateString() : '...'
         ]);
         autoTable(doc, {
             head: [['Name', 'Phone', 'Created At']],
@@ -171,7 +176,6 @@ export default function DriversPage() {
                             placeholder="Search driver by name..."
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
-                            suppressHydrationWarning
                             className="w-full pl-10 pr-4 py-2 bg-accent/50 border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 text-sm"
                         />
                     </div>
@@ -179,7 +183,6 @@ export default function DriversPage() {
                     <div className="flex flex-wrap gap-2 w-full sm:w-auto">
                         <button
                             onClick={exportToExcel}
-                            suppressHydrationWarning
                             className="flex items-center justify-center gap-2 px-3 py-2 bg-green-600 text-white rounded-xl font-medium hover:bg-green-700 transition-colors text-sm"
                         >
                             <FileSpreadsheet className="w-4 h-4" />
@@ -187,7 +190,6 @@ export default function DriversPage() {
                         </button>
                         <button
                             onClick={exportToPDF}
-                            suppressHydrationWarning
                             className="flex items-center justify-center gap-2 px-3 py-2 bg-red-600 text-white rounded-xl font-medium hover:bg-red-700 transition-colors text-sm"
                         >
                             <FileText className="w-4 h-4" />
@@ -195,7 +197,6 @@ export default function DriversPage() {
                         </button>
                         <button
                             onClick={openAddModal}
-                            suppressHydrationWarning
                             className="flex items-center justify-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-xl font-medium hover:opacity-90 transition-opacity text-sm"
                         >
                             <Plus className="w-4 h-4" />
@@ -233,7 +234,7 @@ export default function DriversPage() {
                                         </div>
                                     </td>
                                     <td className="px-6 py-4 text-muted-foreground">{item.phone || '-'}</td>
-                                    <td className="px-6 py-4 text-muted-foreground">{new Date(item.created_at).toLocaleDateString()}</td>
+                                    <td className="px-6 py-4 text-muted-foreground">{mounted ? new Date(item.created_at).toLocaleDateString() : '...'}</td>
                                     <td className="px-6 py-4 text-right">
                                         <div className="flex items-center justify-end gap-2">
                                             <button onClick={() => openEditModal(item)} className="p-2 hover:bg-primary/10 hover:text-primary rounded-lg transition-colors"><Edit2 className="w-4 h-4" /></button>
@@ -270,7 +271,7 @@ export default function DriversPage() {
                                         </div>
                                         <div>
                                             <h3 className="font-semibold text-foreground">{item.name}</h3>
-                                            <p className="text-xs text-muted-foreground">{new Date(item.created_at).toLocaleDateString()}</p>
+                                            <p className="text-xs text-muted-foreground">{mounted ? new Date(item.created_at).toLocaleDateString() : '...'}</p>
                                         </div>
                                     </div>
                                     <div className="flex items-center gap-1 text-xs font-medium text-muted-foreground bg-accent/50 px-2 py-1 rounded-lg">
